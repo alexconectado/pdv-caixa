@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  /* Ajustes de impressão: ocultar navbar e fundo */
+  @media print {
+    nav, .print\:hidden { display: none !important; }
+    body { background: #fff; }
+  }
+  @page { margin: 10mm; }
+</style>
+<div id="receipt" class="max-w-md mx-auto bg-white p-4 rounded shadow">
+  <h1 class="text-center font-semibold mb-2">RECIBO DE PAGAMENTO</h1>
+  <div class="text-center text-xs mb-2">(Sem Valor Fiscal)</div>
+  <div class="text-sm">
+    <div><strong>ID Venda:</strong> {{ venda.id }}</div>
+    <div><strong>Data:</strong> {{ fmt_dt(venda.created_at) }}</div>
+    <div><strong>Valor:</strong> R$ {{ '%.2f'|format(venda.amount) }}</div>
+    <div><strong>Pagamento:</strong> {{ payment_label(venda.payment_method) }}</div>
+  </div>
+  <div class="mt-4 print:hidden">
+    <button onclick="window.print()" class="bg-gray-800 text-white px-4 py-2 rounded">Imprimir</button>
+  </div>
+</div>
+<style>
+  /* Layout para impressora térmica 80mm */
+  @media print {
+    @page { size: 80mm auto; margin: 0; }
+    html, body { background: #fff; padding: 0; margin: 0; }
+    nav, .print\:hidden { display: none !important; }
+    body * { visibility: hidden; }
+    #receipt, #receipt * { visibility: visible; }
+    #receipt { position: absolute; left: 0; top: 0; width: 80mm; max-width: 80mm; padding: 6mm; box-shadow: none !important; border-radius: 0; font-family: 'Poppins', Arial, sans-serif; font-size: 12px; line-height: 1.3; }
+  }
+  /* Separador simples que funciona bem em térmicas */
+  .sep { font-family: inherit; font-size: 12px; letter-spacing: 1px; text-align: center; color: #444; }
+</style>
+<script>
+  // Dispara impressão automática ao carregar a página de recibo
+  window.addEventListener('load', function(){
+    setTimeout(function(){
+      try { window.print(); } catch(e) {}
+    }, 100);
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="text-xl font-semibold mb-4">Usuários</h1>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div class="bg-white p-4 rounded shadow">
+    <h2 class="font-semibold mb-2">Cadastrar Usuário</h2>
+    <form method="post" action="/administracao/usuarios/criar" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <input type="hidden" name="_csrf" value="{{ csrf_token }}" />
+      <div>
+        <label class="block text-sm mb-1">Usuário</label>
+        <input name="username" class="w-full border rounded px-3 py-2" required />
+      </div>
+      <div>
+        <label class="block text-sm mb-1">Nome</label>
+        <input name="full_name" class="w-full border rounded px-3 py-2" required />
+      </div>
+      <div>
+        <label class="block text-sm mb-1">Senha</label>
+        <input type="password" name="password" class="w-full border rounded px-3 py-2" required />
+      </div>
+      <div>
+        <label class="block text-sm mb-1">Papel</label>
+        <select name="role" class="w-full border rounded px-3 py-2">
+          <option value="operator">Operador</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <div class="md:col-span-2 flex items-center gap-2">
+        <input type="checkbox" name="active" checked class="h-4 w-4" />
+        <label class="text-sm">Ativo</label>
+      </div>
+      <div class="md:col-span-2">
+        <button class="bg-green-600 hover:bg-green-700 text-white rounded px-4 py-2">Salvar</button>
+      </div>
+    </form>
+  </div>
+  <div class="bg-white p-4 rounded shadow">
+    <h2 class="font-semibold mb-2">Lista</h2>
+    <table class="w-full text-sm">
+      <thead><tr><th class="text-left">Usuário</th><th class="text-left">Nome</th><th>Papel</th><th>Ativo</th></tr></thead>
+      <tbody>
+        {% for u in usuarios %}
+        <tr class="border-t">
+          <td>{{ u.username }}</td>
+          <td>{{ u.full_name }}</td>
+          <td class="text-center">{{ u.role }}</td>
+          <td class="text-center">{{ 'Sim' if u.active else 'Não' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

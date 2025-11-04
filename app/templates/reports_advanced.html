@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="text-xl font-semibold mb-4">Relatórios Avançados</h1>
+
+<!-- Filtros -->
+<form method="get" action="/relatorios" class="mb-4 bg-white p-4 rounded shadow">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div>
+      <label class="block text-sm mb-1">Data Início</label>
+      <input type="date" name="data_inicio" value="{{ dt_inicio.isoformat() }}" class="w-full border rounded px-3 py-2" />
+    </div>
+    <div>
+      <label class="block text-sm mb-1">Data Fim</label>
+      <input type="date" name="data_fim" value="{{ dt_fim.isoformat() }}" class="w-full border rounded px-3 py-2" />
+    </div>
+    <div>
+      <label class="block text-sm mb-1">Operador</label>
+      <select name="operador_id" class="w-full border rounded px-3 py-2">
+        <option value="">Todos</option>
+        {% for op in operadores %}
+        <option value="{{ op.id }}" {% if filtro_operador_id == op.id %}selected{% endif %}>{{ op.full_name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="block text-sm mb-1">Forma de Pagamento</label>
+      <select name="forma_pagamento" class="w-full border rounded px-3 py-2">
+        <option value="">Todas</option>
+        <option value="DINHEIRO" {% if filtro_forma == "DINHEIRO" %}selected{% endif %}>Dinheiro</option>
+        <option value="PIX" {% if filtro_forma == "PIX" %}selected{% endif %}>PIX</option>
+        <option value="DEBITO" {% if filtro_forma == "DEBITO" %}selected{% endif %}>Débito</option>
+        <option value="CREDITO" {% if filtro_forma == "CREDITO" %}selected{% endif %}>Crédito</option>
+      </select>
+    </div>
+    <div>
+      <label class="block text-sm mb-1">Status do Caixa</label>
+      <select name="status_caixa" class="w-full border rounded px-3 py-2">
+        <option value="">Todos</option>
+        <option value="open" {% if filtro_status == "open" %}selected{% endif %}>Aberto</option>
+        <option value="closed" {% if filtro_status == "closed" %}selected{% endif %}>Fechado</option>
+      </select>
+    </div>
+    <div class="flex items-end">
+      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white rounded px-4 py-2">Filtrar</button>
+    </div>
+  </div>
+</form>
+
+<!-- Totais -->
+<div class="grid grid-cols-1 md:grid-cols-6 gap-4 mb-4">
+  <div class="bg-white p-4 rounded shadow">
+    <div class="text-sm text-gray-600">Total Geral</div>
+    <div class="text-2xl font-semibold text-green-600">R$ {{ '%.2f'|format(totais.geral) }}</div>
+  </div>
+  <div class="bg-white p-4 rounded shadow">
+    <div class="text-sm text-gray-600">Dinheiro</div>
+    <div class="text-xl font-semibold">R$ {{ '%.2f'|format(totais.dinheiro) }}</div>
+  </div>
+  <div class="bg-white p-4 rounded shadow">
+    <div class="text-sm text-gray-600">PIX</div>
+    <div class="text-xl font-semibold">R$ {{ '%.2f'|format(totais.pix) }}</div>
+  </div>
+  <div class="bg-white p-4 rounded shadow">
+    <div class="text-sm text-gray-600">Débito</div>
+    <div class="text-xl font-semibold">R$ {{ '%.2f'|format(totais.debito) }}</div>
+  </div>
+  <div class="bg-white p-4 rounded shadow">
+    <div class="text-sm text-gray-600">Crédito</div>
+    <div class="text-xl font-semibold">R$ {{ '%.2f'|format(totais.credito) }}</div>
+  </div>
+  <div class="bg-white p-4 rounded shadow">
+    <div class="text-sm text-gray-600">Qtd Vendas</div>
+    <div class="text-xl font-semibold">{{ totais.qtd_vendas }}</div>
+  </div>
+</div>
+
+<!-- Botões de exportação -->
+<div class="mb-4 flex gap-2">
+  <a href="/relatorios/exportar/csv?data_inicio={{ dt_inicio.isoformat() }}&data_fim={{ dt_fim.isoformat() }}{% if filtro_operador_id %}&operador_id={{ filtro_operador_id }}{% endif %}{% if filtro_forma %}&forma_pagamento={{ filtro_forma }}{% endif %}" 
+     class="bg-green-600 hover:bg-green-700 text-white rounded px-4 py-2">
+    📊 Exportar CSV
+  </a>
+  <a href="/relatorios/exportar/pdf?data_inicio={{ dt_inicio.isoformat() }}&data_fim={{ dt_fim.isoformat() }}{% if filtro_operador_id %}&operador_id={{ filtro_operador_id }}{% endif %}{% if filtro_forma %}&forma_pagamento={{ filtro_forma }}{% endif %}" 
+     class="bg-red-600 hover:bg-red-700 text-white rounded px-4 py-2">
+    📄 Exportar PDF
+  </a>
+</div>
+
+<!-- Lista de vendas -->
+<div class="bg-white p-4 rounded shadow">
+  <h2 class="font-semibold mb-2">Vendas do Período</h2>
+  {% if vendas %}
+  <table class="w-full text-sm">
+    <thead>
+      <tr>
+        <th class="text-left">Hora</th>
+        <th class="text-left">Produto</th>
+        <th class="text-right">Valor</th>
+        <th class="text-center">Pagamento</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for v in vendas %}
+      <tr class="border-t">
+        <td>{{ fmt_dt(v.created_at) }}</td>
+        <td>{{ v.product_code }}</td>
+        <td class="text-right">R$ {{ '%.2f'|format(v.amount) }}</td>
+        <td class="text-center">{{ payment_label(v.payment_method) }}</td>
+        <td class="text-right"><a class="underline text-blue-700" href="/vendas/recibo/{{ v.id }}" target="_blank">Recibo</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <div class="text-sm text-gray-600">Nenhuma venda encontrada no período.</div>
+  {% endif %}
+</div>
+{% endblock %}

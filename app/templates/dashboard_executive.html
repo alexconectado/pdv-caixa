@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="text-xl font-semibold mb-4">Dashboard Executivo - {{ mes_referencia }}</h1>
+
+<!-- KPIs -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+  <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-lg shadow-lg">
+    <div class="text-sm opacity-90">Total do Mês</div>
+    <div class="text-3xl font-bold mt-2">R$ {{ '%.2f'|format(kpis.total_mes) }}</div>
+  </div>
+  <div class="bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-lg shadow-lg">
+    <div class="text-sm opacity-90">Qtd Vendas</div>
+    <div class="text-3xl font-bold mt-2">{{ kpis.qtd_vendas }}</div>
+  </div>
+  <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-6 rounded-lg shadow-lg">
+    <div class="text-sm opacity-90">Média Diária</div>
+    <div class="text-3xl font-bold mt-2">R$ {{ '%.2f'|format(kpis.media_diaria) }}</div>
+  </div>
+  <div class="bg-gradient-to-br from-orange-500 to-orange-600 text-white p-6 rounded-lg shadow-lg">
+    <div class="text-sm opacity-90">Ticket Médio</div>
+    <div class="text-3xl font-bold mt-2">R$ {{ '%.2f'|format(kpis.ticket_medio) }}</div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <!-- Top 10 Produtos -->
+  <div class="bg-white p-6 rounded-lg shadow">
+    <h2 class="text-lg font-semibold mb-4">🏆 Top 10 Produtos</h2>
+    {% if top_produtos %}
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b">
+          <th class="text-left py-2">Código</th>
+          <th class="text-center">Qtd</th>
+          <th class="text-right">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in top_produtos %}
+        <tr class="border-b">
+          <td class="py-2">{{ p.codigo }}</td>
+          <td class="text-center">{{ p.qtd }}</td>
+          <td class="text-right font-semibold">R$ {{ '%.2f'|format(p.total) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="text-gray-600 text-sm">Nenhum produto vendido no mês.</div>
+    {% endif %}
+  </div>
+
+  <!-- Ranking Operadores -->
+  <div class="bg-white p-6 rounded-lg shadow">
+    <h2 class="text-lg font-semibold mb-4">👥 Ranking de Operadores</h2>
+    {% if ranking_operadores %}
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b">
+          <th class="text-left py-2">Operador</th>
+          <th class="text-center">Vendas</th>
+          <th class="text-right">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for op in ranking_operadores %}
+        <tr class="border-b">
+          <td class="py-2">{{ op.nome }}</td>
+          <td class="text-center">{{ op.qtd }}</td>
+          <td class="text-right font-semibold">R$ {{ '%.2f'|format(op.total) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="text-gray-600 text-sm">Nenhuma venda no mês.</div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Vendas por Forma de Pagamento -->
+<div class="bg-white p-6 rounded-lg shadow mt-6">
+  <h2 class="text-lg font-semibold mb-4">💳 Vendas por Forma de Pagamento</h2>
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div class="border-l-4 border-green-500 pl-4">
+      <div class="text-sm text-gray-600">Dinheiro</div>
+      <div class="text-2xl font-semibold">R$ {{ '%.2f'|format(vendas_por_forma.DINHEIRO) }}</div>
+    </div>
+    <div class="border-l-4 border-blue-500 pl-4">
+      <div class="text-sm text-gray-600">PIX</div>
+      <div class="text-2xl font-semibold">R$ {{ '%.2f'|format(vendas_por_forma.PIX) }}</div>
+    </div>
+    <div class="border-l-4 border-purple-500 pl-4">
+      <div class="text-sm text-gray-600">Débito</div>
+      <div class="text-2xl font-semibold">R$ {{ '%.2f'|format(vendas_por_forma.DEBITO) }}</div>
+    </div>
+    <div class="border-l-4 border-orange-500 pl-4">
+      <div class="text-sm text-gray-600">Crédito</div>
+      <div class="text-2xl font-semibold">R$ {{ '%.2f'|format(vendas_por_forma.CREDITO) }}</div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

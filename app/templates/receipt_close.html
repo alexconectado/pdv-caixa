@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+<div id="receipt" class="max-w-md mx-auto bg-white p-4 rounded shadow">
+  <h1 class="text-center font-semibold mb-2">COMPROVANTE DE FECHAMENTO</h1>
+  <div class="text-sm">
+  <div><strong>Data:</strong> {{ fmt_dt(caixa.opened_at)[:10] }}</div>
+    <div><strong>Abertura:</strong> {{ fmt_dt(caixa.opened_at) }}</div>
+    <div><strong>Fechamento:</strong> {{ fmt_dt(caixa.closed_at) }}</div>
+    <div><strong>Aberto por:</strong> {{ opened_by_name }}</div>
+    <div><strong>Fechado por:</strong> {{ closed_by_name }}</div>
+    <hr class="my-2" />
+    <div><strong>Troco Inicial:</strong> R$ {{ '%.2f'|format(caixa.opening_amount) }}</div>
+    <div class="mt-2 font-semibold">Esperado</div>
+    <div>Gaveta: R$ {{ '%.2f'|format(totais.gaveta) }}</div>
+    <div>PIX: R$ {{ '%.2f'|format(totais.pix) }}</div>
+    <div>Débito: R$ {{ '%.2f'|format(totais.debito) }}</div>
+    <div>Crédito: R$ {{ '%.2f'|format(totais.credito) }}</div>
+    <div class="mt-2 font-semibold">Informado</div>
+    <div>Gaveta: R$ {{ '%.2f'|format(caixa.reported_cash_drawer or 0) }}</div>
+    <div>PIX: R$ {{ '%.2f'|format(caixa.reported_pix_total or 0) }}</div>
+    <div>Débito: R$ {{ '%.2f'|format(caixa.reported_debit_total or 0) }}</div>
+    <div>Crédito: R$ {{ '%.2f'|format(caixa.reported_credit_total or 0) }}</div>
+    <div class="mt-2 font-semibold">Quebra</div>
+    <div>Gaveta: R$ {{ '%.2f'|format(caixa.diff_cash or 0) }}</div>
+    <div>PIX: R$ {{ '%.2f'|format(caixa.diff_pix or 0) }}</div>
+    <div>Débito: R$ {{ '%.2f'|format(caixa.diff_debit or 0) }}</div>
+    <div>Crédito: R$ {{ '%.2f'|format(caixa.diff_credit or 0) }}</div>
+    <div>Total Quebra: <strong>R$ {{ '%.2f'|format(caixa.diff_overall or 0) }}</strong></div>
+  </div>
+  <div class="mt-4 print:hidden">
+    <button onclick="window.print()" class="bg-gray-800 text-white px-4 py-2 rounded">Imprimir</button>
+  </div>
+</div>
+<style>
+  @media print {
+    @page { size: 80mm auto; margin: 0; }
+    html, body { background: #fff; padding: 0; margin: 0; }
+    nav, .print\:hidden { display: none !important; }
+    body * { visibility: hidden; }
+    #receipt, #receipt * { visibility: visible; }
+    #receipt { position: absolute; left: 0; top: 0; width: 80mm; max-width: 80mm; padding: 6mm; box-shadow: none !important; border-radius: 0; font-family: 'Poppins', Arial, sans-serif; font-size: 12px; line-height: 1.3; }
+  }
+  .sep { font-family: inherit; font-size: 12px; letter-spacing: 1px; text-align: center; color: #444; }
+</style>
+{% endblock %}

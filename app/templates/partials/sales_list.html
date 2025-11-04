@@ -1,0 +1,36 @@
+<h2 class="font-semibold mb-2">Vendas do Dia</h2>
+{% if vendas %}
+<table class="w-full text-sm">
+  <thead>
+    <tr><th class="text-left">Hora</th><th class="text-left">Produto</th><th class="text-right">Valor</th><th class="text-center">Pagamento</th><th></th></tr>
+  </thead>
+  <tbody>
+  {% for v in vendas %}
+    {% set is_cancelada = cancelados_ids and (v.id in cancelados_ids) %}
+    <tr class="border-t {% if is_cancelada %}opacity-60{% endif %}">
+      <td>{{ fmt_dt(v.created_at) }}</td>
+      <td>
+        {{ v.product_code }}
+        {% if is_cancelada %}<span class="ml-2 text-xs px-2 py-0.5 bg-red-100 text-red-700 rounded">Cancelada</span>{% endif %}
+      </td>
+      <td class="text-right">R$ {{ '%.2f'|format(v.amount) }}</td>
+      <td class="text-center">{{ payment_label(v.payment_method) }}</td>
+      <td class="text-right">
+        {% if not is_cancelada %}
+          <a class="underline text-blue-700 mr-2" href="/vendas/recibo/{{ v.id }}" target="_blank">Recibo</a>
+          {% if user.role == 'admin' %}
+            <a class="underline text-red-700" href="/vendas/cancelar/{{ v.id }}">Cancelar</a>
+          {% endif %}
+        {% else %}
+          {% if user.role == 'admin' %}
+            <span class="text-xs text-gray-500">(recibo desabilitado)</span>
+          {% endif %}
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+  <div class="text-sm text-gray-600">Nenhuma venda lançada hoje.</div>
+{% endif %}

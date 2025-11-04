@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="text-xl font-semibold mb-4">Cancelar Venda</h1>
+{% if error %}
+  <div class="p-2 mb-3 text-sm text-red-700 bg-red-100 rounded">{{ error }}</div>
+{% endif %}
+<div class="bg-white p-4 rounded shadow mb-4">
+  <div class="text-sm text-gray-600 mb-2">Confirme os dados da venda:</div>
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+    <div><strong>ID:</strong> {{ venda.id }}</div>
+    <div><strong>Hora:</strong> {{ fmt_dt(venda.created_at) }}</div>
+    <div><strong>Produto:</strong> {{ venda.product_code }}</div>
+    <div><strong>Valor:</strong> R$ {{ '%.2f'|format(venda.amount) }}</div>
+    <div><strong>Pagamento:</strong> {{ payment_label(venda.payment_method) }}</div>
+  </div>
+</div>
+<form method="post" action="">
+  <input type="hidden" name="_csrf" value="{{ csrf_token }}" />
+  <div class="bg-white p-4 rounded shadow">
+    <label class="block text-sm mb-1">Motivo do cancelamento</label>
+    <textarea name="motivo" class="w-full border rounded px-3 py-2" rows="3" required placeholder="Descreva o motivo..."></textarea>
+    <label class="block text-sm mb-1 mt-3">Confirme sua senha (admin)</label>
+    <input type="password" name="senha" class="w-full border rounded px-3 py-2" required />
+    <div class="mt-4 flex gap-2">
+      <a href="/vendas/nova" class="px-4 py-2 rounded border">Voltar</a>
+      <button class="px-4 py-2 rounded bg-red-600 text-white">Confirmar Cancelamento</button>
+    </div>
+  </div>
+</form>
+{% endblock %}

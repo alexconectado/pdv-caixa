@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - PDV</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.5.1/flowbite.min.css" rel="stylesheet" />
+</head>
+<body class="min-h-screen bg-gray-100 flex items-center justify-center">
+  <div class="bg-white shadow rounded p-6 w-full max-w-sm">
+    <h1 class="text-xl font-semibold mb-4">Dona Chica</h1>
+    {% if error %}
+    <div class="p-2 mb-3 text-sm text-red-700 bg-red-100 rounded">{{ error }}</div>
+    {% endif %}
+    <form method="post" action="/entrar" class="space-y-3">
+      <input type="hidden" name="_csrf" value="{{ csrf_token }}" />
+      <div>
+        <label class="block text-sm mb-1">Usuário</label>
+        <input name="username" class="w-full border rounded px-3 py-2" required />
+      </div>
+      <div>
+        <label class="block text-sm mb-1">Senha</label>
+        <input name="password" type="password" class="w-full border rounded px-3 py-2" required />
+      </div>
+      <button class="w-full bg-blue-600 hover:bg-blue-700 text-white rounded px-4 py-2">Entrar</button>
+    </form>
+    
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.5.1/flowbite.min.js"></script>
+</body>
+</html>

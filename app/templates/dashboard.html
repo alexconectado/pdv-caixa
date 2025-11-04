@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="text-xl font-semibold mb-4">Dashboard Executivo</h1>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+  <div class="bg-white p-4 rounded shadow">
+    <div class="text-sm text-gray-600">Total Vendas (Mês)</div>
+    <div class="text-2xl font-bold text-green-600">R$ {{ "%.2f"|format(kpis.total_mes) }}</div>
+  </div>
+  <div class="bg-white p-4 rounded shadow">
+    <div class="text-sm text-gray-600">Média Diária</div>
+    <div class="text-2xl font-bold text-blue-600">R$ {{ "%.2f"|format(kpis.media_diaria) }}</div>
+  </div>
+  <div class="bg-white p-4 rounded shadow">
+    <div class="text-sm text-gray-600">Ticket Médio</div>
+    <div class="text-2xl font-bold text-purple-600">R$ {{ "%.2f"|format(kpis.ticket_medio) }}</div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div class="bg-white p-4 rounded shadow">
+    <h2 class="font-semibold mb-3">Top 10 Produtos Mais Vendidos</h2>
+    {% if top_produtos %}
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b">
+              <th class="text-left py-2">#</th>
+              <th class="text-left py-2">Produto</th>
+              <th class="text-right py-2">Qtd</th>
+              <th class="text-right py-2">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in top_produtos %}
+              <tr class="border-t hover:bg-gray-50">
+                <td class="py-2">{{ loop.index }}</td>
+                <td class="py-2">{{ item.codigo }}</td>
+                <td class="py-2 text-right">{{ item.qtd }}</td>
+                <td class="py-2 text-right font-semibold">R$ {{ "%.2f"|format(item.total) }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="text-gray-600">Nenhum produto vendido no período.</div>
+    {% endif %}
+  </div>
+
+  <div class="bg-white p-4 rounded shadow">
+    <h2 class="font-semibold mb-3">Ranking de Operadores (Mês Atual)</h2>
+    {% if ranking_operadores %}
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b">
+              <th class="text-left py-2">#</th>
+              <th class="text-left py-2">Operador</th>
+              <th class="text-right py-2">Vendas</th>
+              <th class="text-right py-2">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in ranking_operadores %}
+              <tr class="border-t hover:bg-gray-50">
+                <td class="py-2">{{ loop.index }}</td>
+                <td class="py-2">{{ item.nome }}</td>
+                <td class="py-2 text-right">{{ item.qtd }}</td>
+                <td class="py-2 text-right font-semibold">R$ {{ "%.2f"|format(item.total) }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="text-gray-600">Nenhum operador com vendas no período.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

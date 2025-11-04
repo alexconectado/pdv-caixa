@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="text-xl font-semibold mb-4">Fechar Caixa</h1>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div class="bg-white p-4 rounded shadow">
+    <h2 class="font-semibold mb-2">Totais Esperados</h2>
+    <ul class="text-sm space-y-1">
+      <li>Gaveta (Dinheiro + Troco): <strong>R$ {{ '%.2f'|format(totais.gaveta) }}</strong></li>
+      <li>Dinheiro: <strong>R$ {{ '%.2f'|format(totais.dinheiro) }}</strong></li>
+      <li>PIX: <strong>R$ {{ '%.2f'|format(totais.pix) }}</strong></li>
+      <li>Débito: <strong>R$ {{ '%.2f'|format(totais.debito) }}</strong></li>
+      <li>Crédito: <strong>R$ {{ '%.2f'|format(totais.credito) }}</strong></li>
+    </ul>
+  </div>
+  <div class="bg-white p-4 rounded shadow">
+    <h2 class="font-semibold mb-2">Informe os Valores Apurados</h2>
+    <form method="post" action="/caixa/fechar" class="space-y-3">
+      <input type="hidden" name="_csrf" value="{{ csrf_token }}" />
+      <div>
+        <label class="block text-sm mb-1">Dinheiro na gaveta (R$)</label>
+        <input type="number" step="0.01" min="0" name="gaveta" class="w-full border rounded px-3 py-2" required />
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div>
+          <label class="block text-sm mb-1">PIX (R$)</label>
+          <input type="number" step="0.01" min="0" name="pix" class="w-full border rounded px-3 py-2" required />
+        </div>
+        <div>
+          <label class="block text-sm mb-1">Débito (R$)</label>
+          <input type="number" step="0.01" min="0" name="debito" class="w-full border rounded px-3 py-2" required />
+        </div>
+        <div>
+          <label class="block text-sm mb-1">Crédito (R$)</label>
+          <input type="number" step="0.01" min="0" name="credito" class="w-full border rounded px-3 py-2" required />
+        </div>
+      </div>
+      <button class="bg-amber-600 hover:bg-amber-700 text-white rounded px-4 py-2">Fechar Caixa</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{# Corpo principal: substitui o alvo #totais via hx-target #totais (innerHTML) #}
+{% include 'partials/totals.html' with context %}
+
+{# Atualização out-of-band da lista de vendas #}
+<div id="vendas-dia" hx-swap-oob="true" class="bg-white p-4 rounded shadow md:col-span-3">
+  {% include 'partials/sales_list.html' with context %}
+</div>
+
+<script>
+  // Abre modal para confirmar impressão do recibo
+  if (window.showPrintModal) {
+    window.showPrintModal("{{ recibo_url }}");
+  }
+</script>

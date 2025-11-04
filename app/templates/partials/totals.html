@@ -1,0 +1,7 @@
+<h2 class="font-semibold mb-2">Totais</h2>
+<ul class="text-sm space-y-1">
+  <li>Dinheiro: <strong>R$ {{ '%.2f'|format((totais.dinheiro) if totais else 0.0) }}</strong></li>
+  <li>PIX: <strong>R$ {{ '%.2f'|format((totais.pix) if totais else 0.0) }}</strong></li>
+  <li>Débito: <strong>R$ {{ '%.2f'|format((totais.debito) if totais else 0.0) }}</strong></li>
+  <li>Crédito: <strong>R$ {{ '%.2f'|format((totais.credito) if totais else 0.0) }}</strong></li>
+</ul>
