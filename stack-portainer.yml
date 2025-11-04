@@ -21,6 +21,7 @@ services:
         # Router / domínio
         - traefik.http.routers.pdv.rule=Host(`pdv.brostech3d.com.br`)
         - traefik.http.routers.pdv.entrypoints=websecure
+        - traefik.http.routers.pdv.tls=true
         - traefik.http.routers.pdv.tls.certresolver=letsencryptresolver
         # Serviço interno na porta 8000
         - traefik.http.services.pdv.loadbalancer.server.port=8000
@@ -31,6 +32,11 @@ services:
         # Middleware para headers SSL (útil para websockets/forwarded proto)
         - traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https
         - traefik.http.routers.pdv.middlewares=sslheader@docker
+        # (Opcional) Redirect HTTP -> HTTPS
+        - traefik.http.routers.pdv-web.rule=Host(`pdv.brostech3d.com.br`)
+        - traefik.http.routers.pdv-web.entrypoints=web
+        - traefik.http.routers.pdv-web.middlewares=redirect-to-https@docker
+        - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
 
 volumes:
   pdv_data:
