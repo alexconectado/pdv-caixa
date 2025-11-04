@@ -14,9 +14,15 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+      update_config:
+        order: start-first
+        parallelism: 1
+        failure_action: rollback
       restart_policy:
         condition: on-failure
       labels:
+        # Força novo rollout quando este valor mudar
+        - com.example.redeploy=force-2025-11-04-01
         - traefik.enable=true
         # Router / domínio
         - traefik.http.routers.pdv.rule=Host(`pdv.brostech3d.com.br`)
