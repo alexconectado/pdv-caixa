@@ -22,10 +22,17 @@ services:
         - traefik.http.routers.pdv.rule=Host(`${TRAEFIK_HOST}`)
         - traefik.http.routers.pdv.entrypoints=${TRAEFIK_ENTRYPOINTS:-websecure}
         - traefik.http.routers.pdv.tls.certresolver=${TRAEFIK_CERTRESOLVER:-letsencrypt}
+        # (Opcional) Redirect HTTP -> HTTPS (descomente se quiser forçar)
+        # - traefik.http.routers.pdv-web.rule=Host(`${TRAEFIK_HOST}`)
+        # - traefik.http.routers.pdv-web.entrypoints=web
+        # - traefik.http.routers.pdv-web.middlewares=redirect-to-https@docker
+        # - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
         # Serviço interno na porta 8000
         - traefik.http.services.pdv.loadbalancer.server.port=8000
         - traefik.http.routers.pdv.service=pdv
         - traefik.http.services.pdv.loadbalancer.passhostheader=true
+        # Informe explicitamente a rede do Traefik (importante em Swarm)
+        - traefik.docker.network=${TRAEFIK_NETWORK:-network_public}
         # Middleware para headers SSL (útil para websockets/forwarded proto)
         - traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https
         - traefik.http.routers.pdv.middlewares=sslheader@docker
@@ -41,4 +48,4 @@ volumes:
 networks:
   traefik_network:
     external: true
-    name: ${TRAEFIK_NETWORK:-network_swarm_public}
+    name: ${TRAEFIK_NETWORK:-network_public}
