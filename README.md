@@ -128,6 +128,22 @@ Observações:
 - Em Swarm, `build:` não é suportado pela stack do Portainer; use uma imagem publicada.
 - Não é necessário mapear portas (Traefik fará o roteamento pela rede externa).
 
+### CI/CD: publicar imagem automaticamente (Docker Hub)
+
+Este repositório inclui um workflow do GitHub Actions em `.github/workflows/docker-publish.yml` que:
+
+- builda a imagem do PDV
+- publica no Docker Hub com tags `latest` e `sha`
+
+Como ativar:
+1. Crie um token (Access Token) no Docker Hub
+2. No GitHub → Settings → Secrets and variables → Actions → New repository secret
+   - `DOCKERHUB_USERNAME` = seu usuário do Docker Hub
+   - `DOCKERHUB_TOKEN` = o token gerado
+3. Faça um push para a branch `main` (ou rode manualmente em Actions)
+4. Ajuste a imagem no `docker-compose.swarm.yml` para `docker.io/SEU_USUARIO/pdv-caixa:latest` (se diferente)
+5. No Portainer (Swarm), use `docker-compose.swarm.yml` como Compose path e faça o deploy.
+
 ### Usando Traefik (Domínio + HTTPS)
 
 Se você já tem o Traefik rodando na sua VPS, pode publicar o PDV diretamente no seu domínio pela própria stack:
