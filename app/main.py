@@ -1,5 +1,6 @@
 import os
 import secrets
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
@@ -23,7 +24,10 @@ app.add_middleware(
 )
 
 # Static
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
+# Resolve o caminho da pasta 'static' relativo a este arquivo e não falha se ausente
+BASE_DIR = Path(__file__).resolve().parent
+STATIC_DIR = BASE_DIR / "static"
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR), check_dir=False), name="static")
 
 # Routers
 app.include_router(auth.router)
