@@ -122,27 +122,27 @@ Se seu ambiente no Portainer usa Swarm (como no exemplo do Chatwoot), utilize o 
    - `TRAEFIK_NETWORK` (rede externa do Traefik, ex. network_swarm_public)
    - `TRAEFIK_CERTRESOLVER` (ex. letsencrypt)
    - `TRAEFIK_ENTRYPOINTS` (ex. websecure)
+   - `PDV_IMAGE` (opcional) → para trocar a imagem; por padrão já usa `ghcr.io/<owner>/pdv-caixa:latest`
 5. Deploy the stack. O Traefik fará o roteamento HTTPS para a porta interna 8000.
 
 Observações:
 - Em Swarm, `build:` não é suportado pela stack do Portainer; use uma imagem publicada.
 - Não é necessário mapear portas (Traefik fará o roteamento pela rede externa).
 
-### CI/CD: publicar imagem automaticamente (Docker Hub)
+### CI/CD: publicar imagem automaticamente (GHCR e opcional Docker Hub)
 
 Este repositório inclui um workflow do GitHub Actions em `.github/workflows/docker-publish.yml` que:
 
 - builda a imagem do PDV
-- publica no Docker Hub com tags `latest` e `sha`
+- publica SEMPRE no GHCR (GitHub Container Registry) com tags `latest` e `sha`
+- publica OPCIONALMENTE no Docker Hub, se você definir os secrets
 
-Como ativar:
-1. Crie um token (Access Token) no Docker Hub
-2. No GitHub → Settings → Secrets and variables → Actions → New repository secret
-   - `DOCKERHUB_USERNAME` = seu usuário do Docker Hub
-   - `DOCKERHUB_TOKEN` = o token gerado
-3. Faça um push para a branch `main` (ou rode manualmente em Actions)
-4. Ajuste a imagem no `docker-compose.swarm.yml` para `docker.io/SEU_USUARIO/pdv-caixa:latest` (se diferente)
-5. No Portainer (Swarm), use `docker-compose.swarm.yml` como Compose path e faça o deploy.
+Como usar:
+1. GHCR (zero configuração): ao fazer push na `main`, a imagem será publicada em `ghcr.io/<owner>/pdv-caixa:latest`
+2. Docker Hub (opcional): crie no GitHub os secrets `DOCKERHUB_USERNAME` e `DOCKERHUB_TOKEN` para também publicar em `docker.io/<user>/pdv-caixa:latest`
+3. No Portainer (Swarm):
+   - Se usar GHCR (padrão), não precisa setar nada; a stack já usa `ghcr.io/<owner>/pdv-caixa:latest`
+   - Se quiser Docker Hub, defina `PDV_IMAGE=docker.io/<user>/pdv-caixa:latest` nas variáveis da Stack
 
 ### Usando Traefik (Domínio + HTTPS)
 

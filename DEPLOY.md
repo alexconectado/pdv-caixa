@@ -56,20 +56,20 @@ Se seu Portainer está gerenciando um cluster Swarm (ex.: você já usa stacks c
    - `TRAEFIK_NETWORK` (ex. network_swarm_public)
    - `TRAEFIK_CERTRESOLVER` (ex. letsencrypt)
    - `TRAEFIK_ENTRYPOINTS` (ex. websecure)
+   - `PDV_IMAGE` (opcional) para forçar uma imagem específica; se não informar, usa GHCR por padrão
 4. Deploy. O Traefik roteará o tráfego HTTPS para a porta interna 8000.
 
 #### Publicando a imagem automaticamente (GitHub Actions)
 
 Já incluímos o workflow `.github/workflows/docker-publish.yml` que publica a imagem no Docker Hub.
 
-Passos:
+Por padrão, o workflow já publica no GHCR sem configuração extra. Opcionalmente, para também publicar no Docker Hub:
 1. Crie um Access Token no Docker Hub
 2. No GitHub → Settings → Secrets and variables → Actions → crie os secrets:
    - `DOCKERHUB_USERNAME`
    - `DOCKERHUB_TOKEN`
 3. Faça push para `main` e aguarde o job concluir
-4. Ajuste a `image:` no `docker-compose.swarm.yml` para `docker.io/SEU_USUARIO/pdv-caixa:latest` se necessário
-5. Faça o deploy da stack no Portainer
+4. Se preferir usar Docker Hub, defina `PDV_IMAGE=docker.io/SEU_USUARIO/pdv-caixa:latest` nas variáveis da Stack
 
 ### 3. Aguarde o build
 

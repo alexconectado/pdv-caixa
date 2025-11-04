@@ -2,9 +2,10 @@ version: "3.8"
 
 services:
   pdv:
-    # Em Swarm, o Portainer não faz build na Stack. Use uma imagem publicada em registry
-    # Altere para sua imagem no Docker Hub/GHCR, ex.: alexconectado/pdv-caixa:latest
-    image: alexconectado/pdv-caixa:latest
+    # Em Swarm, use uma imagem publicada. Por padrão usamos GHCR; você pode
+    # sobrescrever com a variável PDV_IMAGE na Stack (ex.: Docker Hub)
+    # Exemplo: PDV_IMAGE=docker.io/alexconectado/pdv-caixa:latest
+    image: ${PDV_IMAGE:-ghcr.io/alexconectado/pdv-caixa:latest}
     hostname: "{{.Service.Name}}.{{.Task.Slot}}"
     environment:
       - SECRET_KEY=${SECRET_KEY:-change-this-secret-key-in-production}
