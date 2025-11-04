@@ -109,6 +109,25 @@ Acesse: `http://localhost:8000`
 
 O volume `pdv_data` persiste o banco SQLite entre restarts.
 
+### Stack em Docker Swarm (com Traefik)
+
+Se seu ambiente no Portainer usa Swarm (como no exemplo do Chatwoot), utilize o arquivo `docker-compose.swarm.yml`:
+
+1. Publique a imagem do PDV em um registry (Docker Hub/GHCR) ou ajuste o campo `image:` no arquivo para sua imagem.
+2. No Portainer, vá em Stacks → Add Stack → Repository e aponte para este repositório.
+3. Em Compose path, informe: `docker-compose.swarm.yml`.
+4. Defina as variáveis de ambiente na stack:
+   - `SECRET_KEY` (obrigatório)
+   - `TRAEFIK_HOST` (seu domínio, ex. pdv.seudominio.com)
+   - `TRAEFIK_NETWORK` (rede externa do Traefik, ex. network_swarm_public)
+   - `TRAEFIK_CERTRESOLVER` (ex. letsencrypt)
+   - `TRAEFIK_ENTRYPOINTS` (ex. websecure)
+5. Deploy the stack. O Traefik fará o roteamento HTTPS para a porta interna 8000.
+
+Observações:
+- Em Swarm, `build:` não é suportado pela stack do Portainer; use uma imagem publicada.
+- Não é necessário mapear portas (Traefik fará o roteamento pela rede externa).
+
 ### Usando Traefik (Domínio + HTTPS)
 
 Se você já tem o Traefik rodando na sua VPS, pode publicar o PDV diretamente no seu domínio pela própria stack:

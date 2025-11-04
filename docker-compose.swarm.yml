@@ -1,0 +1,44 @@
+version: "3.8"
+
+services:
+  pdv:
+    # Em Swarm, o Portainer não faz build na Stack. Use uma imagem publicada em registry
+    # Altere para sua imagem no Docker Hub/GHCR, ex.: alexconectado/pdv-caixa:latest
+    image: alexconectado/pdv-caixa:latest
+    hostname: "{{.Service.Name}}.{{.Task.Slot}}"
+    environment:
+      - SECRET_KEY=${SECRET_KEY:-change-this-secret-key-in-production}
+      - DATABASE_URL=sqlite:////data/pdv.db
+    volumes:
+      - pdv_data:/data
+    networks:
+      - traefik_network
+    deploy:
+      mode: replicated
+      replicas: 1
+      labels:
+        - traefik.enable=true
+        # Router / domínio
+        - traefik.http.routers.pdv.rule=Host(`${TRAEFIK_HOST}`)
+        - traefik.http.routers.pdv.entrypoints=${TRAEFIK_ENTRYPOINTS:-websecure}
+        - traefik.http.routers.pdv.tls.certresolver=${TRAEFIK_CERTRESOLVER:-letsencrypt}
+        # Serviço interno na porta 8000
+        - traefik.http.services.pdv.loadbalancer.server.port=8000
+        - traefik.http.routers.pdv.service=pdv
+        - traefik.http.services.pdv.loadbalancer.passhostheader=true
+        # Middleware para headers SSL (útil para websockets/forwarded proto)
+        - traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https
+        - traefik.http.routers.pdv.middlewares=sslheader@docker
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+
+volumes:
+  pdv_data:
+    driver: local
+
+networks:
+  traefik_network:
+    external: true
+    name: ${TRAEFIK_NETWORK:-network_swarm_public}

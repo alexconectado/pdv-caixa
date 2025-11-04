@@ -44,6 +44,20 @@ git push -u origin main
 
 7. Clique em **Deploy the stack**
 
+### 2.1 Deploy no Portainer (Docker Swarm)
+
+Se seu Portainer está gerenciando um cluster Swarm (ex.: você já usa stacks com `deploy:` e rede externa do Traefik), use o arquivo `docker-compose.swarm.yml`:
+
+1. Publique a imagem do PDV em um registry (ou ajuste `image:` no arquivo para uma imagem sua).
+2. Em **Compose path**, use `docker-compose.swarm.yml`.
+3. Variáveis na stack:
+   - `SECRET_KEY`
+   - `TRAEFIK_HOST` (ex. pdv.seudominio.com)
+   - `TRAEFIK_NETWORK` (ex. network_swarm_public)
+   - `TRAEFIK_CERTRESOLVER` (ex. letsencrypt)
+   - `TRAEFIK_ENTRYPOINTS` (ex. websecure)
+4. Deploy. O Traefik roteará o tráfego HTTPS para a porta interna 8000.
+
 ### 3. Aguarde o build
 
 - O Portainer vai clonar o repositório
@@ -90,6 +104,8 @@ Se você já usa Traefik no seu servidor, a stack já vem pronta com labels e re
 - `TRAEFIK_ENTRYPOINTS` = `websecure`
 
 Certifique-se de que o Traefik está publicado com o provider Docker e que a rede externa existe (ex.: `traefik_proxy`). A stack se conectará a essa rede automaticamente.
+
+Em modo Swarm, as labels do Traefik ficam em `deploy.labels` (como no exemplo). Em modo standalone, ficam em `services.pdv.labels`.
 
 ### Backup do banco de dados
 
