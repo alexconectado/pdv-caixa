@@ -109,10 +109,28 @@ Acesse: `http://localhost:8000`
 
 O volume `pdv_data` persiste o banco SQLite entre restarts.
 
+### Usando Traefik (Domínio + HTTPS)
+
+Se você já tem o Traefik rodando na sua VPS, pode publicar o PDV diretamente no seu domínio pela própria stack:
+
+1. Garanta que o Traefik e sua rede externa existam (por exemplo, `traefik_proxy`).
+2. No Portainer, ao criar/editar a stack, adicione as variáveis de ambiente:
+   - `TRAEFIK_HOST` = `pdv.seudominio.com`
+   - `TRAEFIK_NETWORK` = `traefik_proxy` (ou o nome da sua rede)
+   - `TRAEFIK_CERTRESOLVER` = `letsencrypt` (ou o que você configurou no Traefik)
+   - `TRAEFIK_ENTRYPOINTS` = `websecure`
+3. A stack já possui labels do Traefik e se conecta automaticamente à rede externa definida.
+4. Certifique-se que seu domínio aponta (DNS) para o IP da VPS.
+
+Observações:
+- Mantivemos a porta `8000:8000` mapeada para testes locais. Em produção via Traefik, ela pode permanecer sem conflito.
+- O serviço interno escuta na porta 8000; Traefik encaminha via `traefik.http.services.pdv.loadbalancer.server.port=8000`.
+
 ### Configuração de produção
 
 - **SECRET_KEY**: defina uma chave forte e única
 - **HTTPS**: use um proxy reverso (Nginx, Traefik, Caddy) com certificado SSL
+   - Para Traefik, utilize as variáveis `TRAEFIK_*` na stack (veja a seção "Usando Traefik")
 - **Backup**: configure backup regular do volume `pdv_data`
 - **Logs**: considere integrar com sistema de logs centralizado
 

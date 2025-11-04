@@ -12,15 +12,26 @@ services:
     environment:
       - SECRET_KEY=${SECRET_KEY:-change-this-secret-key-in-production}
       - DATABASE_URL=sqlite:////data/pdv.db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pdv.rule=Host(`${TRAEFIK_HOST}`)"
+      - "traefik.http.routers.pdv.entrypoints=${TRAEFIK_ENTRYPOINTS:-websecure}"
+      - "traefik.http.routers.pdv.tls=true"
+      - "traefik.http.routers.pdv.tls.certresolver=${TRAEFIK_CERTRESOLVER:-letsencrypt}"
+      - "traefik.http.services.pdv.loadbalancer.server.port=8000"
     volumes:
       - pdv_data:/data
     restart: unless-stopped
     networks:
       - pdv_network
+      - traefik
 
 networks:
   pdv_network:
     driver: bridge
+  traefik:
+    external: true
+    name: ${TRAEFIK_NETWORK:-traefik_proxy}
 
 volumes:
   pdv_data:

@@ -80,23 +80,16 @@ Quando você fizer alterações no código:
 
 ## Configurações adicionais
 
-### Proxy reverso (Nginx/Traefik)
+### Proxy reverso (Traefik recomendado)
 
-Para usar domínio e HTTPS, configure um proxy reverso apontando para `localhost:8000`.
+Se você já usa Traefik no seu servidor, a stack já vem pronta com labels e rede externa. No Portainer, defina as variáveis de ambiente:
 
-Exemplo Nginx:
-```nginx
-server {
-    listen 80;
-    server_name pdv.seudominio.com;
-    
-    location / {
-        proxy_pass http://localhost:8000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-}
-```
+- `TRAEFIK_HOST` = `pdv.seudominio.com`
+- `TRAEFIK_NETWORK` = `traefik_proxy` (ou o nome da sua rede do Traefik)
+- `TRAEFIK_CERTRESOLVER` = `letsencrypt` (ou seu resolver)
+- `TRAEFIK_ENTRYPOINTS` = `websecure`
+
+Certifique-se de que o Traefik está publicado com o provider Docker e que a rede externa existe (ex.: `traefik_proxy`). A stack se conectará a essa rede automaticamente.
 
 ### Backup do banco de dados
 
