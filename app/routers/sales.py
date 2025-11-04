@@ -1,4 +1,5 @@
-from datetime import date
+from datetime import date, datetime
+import pytz
 
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -17,7 +18,8 @@ templates = Jinja2Templates(directory="app/templates")
 
 @router.get("/nova", response_class=HTMLResponse)
 async def nova_venda_get(request: Request, user: User = Depends(login_required), session: Session = Depends(get_session)):
-    hoje = date.today()
+    tz = pytz.timezone("America/Sao_Paulo")
+    hoje = datetime.now(tz).date()
     caixa = session.exec(select(CashSession).where(CashSession.data == hoje, CashSession.status == StatusEnum.open)).first()
     vendas: list[Sale] = []
     totais = None
@@ -64,7 +66,8 @@ async def nova_venda_post(
     session: Session = Depends(get_session),
 ):
     csrf_protect(request, csrf_token)
-    hoje = date.today()
+    tz = pytz.timezone("America/Sao_Paulo")
+    hoje = datetime.now(tz).date()
     caixa = session.exec(select(CashSession).where(CashSession.data == hoje, CashSession.status == StatusEnum.open)).first()
     if not caixa:
         # sem caixa aberto hoje

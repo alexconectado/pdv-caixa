@@ -2,6 +2,7 @@ from datetime import date, datetime
 
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
+import pytz
 from fastapi.templating import Jinja2Templates
 from sqlmodel import Session, select
 
@@ -16,27 +17,30 @@ templates = Jinja2Templates(directory="app/templates")
 
 @router.get("/status", response_class=HTMLResponse)
 async def caixa_status(request: Request, user: User = Depends(login_required), session: Session = Depends(get_session)):
-    today = date.today()
-    aberto = session.exec(select(CashSession).where(CashSession.data == today, CashSession.status == StatusEnum.open)).first()
+    tz = pytz.timezone("America/Sao_Paulo")
+    today = datetime.now(tz).date()
+    aberto = session.exec(
+        select(CashSession).where(CashSession.data == today, CashSession.status == StatusEnum.open)
+    ).first()
     return templates.TemplateResponse(
-        "cash_status.html", {"request": request, "user": user, "aberto": aberto, "csrf_token": get_csrf_token(request)}
+        "cash_status.html",
+        {"request": request, "user": user, "aberto": aberto, "csrf_token": get_csrf_token(request)},
     )
-
 
 @router.get("/abrir", response_class=HTMLResponse)
 async def abrir_get(request: Request, user: User = Depends(login_required)):
-    from datetime import date as _date
+    tz = pytz.timezone("America/Sao_Paulo")
+    today = datetime.now(tz).date().isoformat()
     return templates.TemplateResponse(
         "open_cash.html",
         {
             "request": request,
             "user": user,
             "error": None,
-            "today": _date.today().isoformat(),
+            "today": today,
             "csrf_token": get_csrf_token(request),
         },
     )
-
 
 @router.post("/abrir")
 async def abrir_post(
@@ -47,9 +51,12 @@ async def abrir_post(
     user: User = Depends(login_required),
     session: Session = Depends(get_session),
 ):
+    tz = pytz.timezone("America/Sao_Paulo")
     csrf_protect(request, csrf_token)
     try:
         data_dt = datetime.strptime(data, "%Y-%m-%d").date()
+        if not data:
+            data_dt = datetime.now(tz).date()
     except Exception:
         return templates.TemplateResponse(
             "open_cash.html",
@@ -77,10 +84,10 @@ async def abrir_post(
     session.commit()
     return RedirectResponse("/caixa/status", status_code=302)
 
-
 @router.get("/fechar", response_class=HTMLResponse)
 async def fechar_get(request: Request, user: User = Depends(login_required), session: Session = Depends(get_session)):
-    today = date.today()
+    tz = pytz.timezone("America/Sao_Paulo")
+    today = datetime.now(tz).date()
     caixa = session.exec(select(CashSession).where(CashSession.data == today, CashSession.status == StatusEnum.open)).first()
     if not caixa:
         return RedirectResponse("/caixa/status", status_code=302)
@@ -126,7 +133,8 @@ async def fechar_post(
     session: Session = Depends(get_session),
 ):
     csrf_protect(request, csrf_token)
-    today = date.today()
+    tz = pytz.timezone("America/Sao_Paulo")
+    today = datetime.now(tz).date()
     caixa = session.exec(select(CashSession).where(CashSession.data == today, CashSession.status == StatusEnum.open)).first()
     if not caixa:
         return RedirectResponse("/caixa/status", status_code=302)
